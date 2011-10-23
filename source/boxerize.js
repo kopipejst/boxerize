@@ -8,7 +8,7 @@
  * @requires jQuery 
  * @param speed 	- length of animation time in miliseconds
  * @param angle 	- final angle of rotation in degrees
- * @param colors 	- array of colors for cube sides [front, top, back, bottom]
+ * @param colors 	- array of colors for cube sides [front, bottom, back, top]
  * @param scale 	- final size of box after rotation [1, 1.1, 1.2 ... 2, 2.1 ...]
  * @param floating	- since it's box element we can float [left, right]
  */
@@ -26,15 +26,24 @@
             defaults = {
                 speed        : 700,
                 angle        : 270,
-                colors        : ['#F1F1F1', '#F6F6F6', '#F9F9F9', '#E3E3E3'],
+                colors        : ['#000000', '#0099FF'],
                 scale         : 1.2,
                 floating    : 'left'
             };
 
 
-        var init;
-        init = function(el) {
+        /**
+         * Inititalize boxerize
+         * @param el
+         */
+        var init = function(el) {
+
             options = $.extend({}, defaults, customOptions);
+
+            if(options.colors.length == 2){
+                gradient();
+            }
+
             $el = $(el);
             $(el).css({
                 'display': 'block',
@@ -46,6 +55,9 @@
             rotateIndex++;
         };
 
+        /**
+         * Create other sides of cube from initial element and wrapper around it
+         */
         var createHTML = function() {
             var translate = height / 2;
 
@@ -53,14 +65,14 @@
                 .addClass('rt_top rt_side')
                 .css({
                     "-webkit-transform" : "rotateX(90deg) translateZ(" + translate + "px)",
-                    "background-color" : options.colors[1]
+                    "background-color" : options.colors[3]
                 });
 
             var bottom = $el.clone()
                 .addClass('rt_bottom rt_side')
                 .css({
                     "-webkit-transform" : "rotateX(-90deg) translateZ(" + translate + "px)",
-                    "background-color" : options.colors[3]
+                    "background-color" : options.colors[1]
                 });
 
             var back = $el.clone()
@@ -115,10 +127,55 @@
 
         };
 
+        /**
+         * Check does browser support 3d transform
+         * @credit http://stackoverflow.com/questions/6189966/detect-condition-to-test-if-a-browser-supports-css-translate3d
+         */
         var has3d = function() {
             return ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix());
         };
 
+        /**
+         * Create gradient colors for each side based on start and end color
+         */
+        var gradient = function(){
+		    var r = 0,
+                g = 0,
+                b = 0,
+                sr = 0,
+                sg = 0,
+                sb = 0,
+                er = 0,
+                eg = 0,
+                eb = 0,
+                sc = options.colors[0].replace('#',''),
+                ec = options.colors[1].replace('#',''),
+                colors = [];
+
+		        r = sr = parseInt(sc.substring(0,2),16);
+		        g = sg = parseInt(sc.substring(2,4),16);
+		        b = sb = parseInt(sc.substring(4,6),16);
+
+		        er = parseInt(ec.substring(0,2),16);
+		        eg = parseInt(ec.substring(2,4),16);
+		        eb = parseInt(ec.substring(4,6),16);
+
+                colors[0] = 'rgb('+r+','+g+','+b+')';
+                for(var i=1; i<4; i++){
+			        r -= parseInt((sr - er) / 3);
+			        g -= parseInt((sg - eg) / 3);
+			        b -= parseInt((sb - eb) / 3);
+                    colors[i] = 'rgb('+r+','+g+','+b+')';
+                }
+
+            options.colors = colors;
+            
+        };
+
+
+        /**
+         * If browser supports 3d transform apply boxerize
+         */
         this.each(
             function() {
                 if (has3d()) {
