@@ -2,15 +2,15 @@
  * Transform DOM element to 3D box - works only in webkit browsers (Safari, Chrome ...)
  *
  * @version 1.0  (04/10/2011)
- * 
+ *
  * @author Ivan Lazarevic
  * @link http://workshop.rs
- * @requires jQuery 
- * @param speed 	- length of animation time in miliseconds
- * @param angle 	- final angle of rotation in degrees
- * @param colors 	- array of colors for cube sides [front, bottom, back, top]
- * @param scale 	- final size of box after rotation [1, 1.1, 1.2 ... 2, 2.1 ...]
- * @param floating	- since it's box element we can float [left, right]
+ * @requires jQuery
+ * @param speed     - length of animation time in miliseconds
+ * @param angle     - final angle of rotation in degrees
+ * @param colors    - array of colors for cube sides [front, bottom, back, top]
+ * @param scale     - final size of box after rotation [1, 1.1, 1.2 ... 2, 2.1 ...]
+ * @param floating  - since it's box element we can float [left, right]
  */
 
 (function($) {
@@ -24,10 +24,10 @@
             height = 0,
             width = 0,
             defaults = {
-                speed        : 700,
-                angle        : 270,
-                colors        : ['#000000', '#0099FF'],
-                scale         : 1.2,
+                speed       : 700,
+                angle       : 270,
+                colors      : ['#000000', '#0099FF'],
+                scale       : 1.2,
                 floating    : 'left'
             };
 
@@ -65,6 +65,7 @@
                 .addClass('rt_top rt_side')
                 .css({
                     "-webkit-transform" : "rotateX(90deg) translateZ(" + translate + "px)",
+                    "transform" : "rotateX(90deg) translateZ(" + translate + "px)",
                     "background-color" : options.colors[3]
                 });
 
@@ -72,6 +73,7 @@
                 .addClass('rt_bottom rt_side')
                 .css({
                     "-webkit-transform" : "rotateX(-90deg) translateZ(" + translate + "px)",
+                    "transform" : "rotateX(-90deg) translateZ(" + translate + "px)",
                     "background-color" : options.colors[1]
                 });
 
@@ -79,12 +81,14 @@
                 .addClass('rt_back rt_side')
                 .css({
                     "-webkit-transform" : "rotateX(180deg) translateZ(" + translate + "px)",
+                    "transform" : "rotateX(180deg) translateZ(" + translate + "px)",
                     "background-color" : options.colors[2]
                 });
 
             $el.addClass('rt_front rt_side')
                 .css({
                     "-webkit-transform" : "rotateY(0deg) translateZ(" + translate + "px)",
+                    "transform" : "rotateY(0deg) translateZ(" + translate + "px)",
                     "background-color" : options.colors[0]
                 })
                 .wrap("<div class='rt_cube_" + rotateIndex + "' />");
@@ -103,23 +107,29 @@
             $el.css({ "position": "absolute" });
             $('.rt_cube_' + rotateIndex).css({
                 "-webkit-transform-style": "preserve-3d",
+                "transform-style": "preserve-3d",
                 "-webkit-transition-property": "all",
+                "transition-property": "all",
                 "-webkit-transition-duration": options.speed + "ms",
+                "transition-duration": options.speed + "ms",
                 "height" : height,
                 "width" : width,
                 "float" : options.floating
             });
 
             $('.rt_cube_' + rotateIndex).mouseover(function(e) {
+                $(this).parent().css('z-index', 99001);
                 $(this).css({
                     "-webkit-transform": "rotateX(" + options.angle + "deg) scale3d(" + options.scale + "," + options.scale + "," + options.scale + ")",
+                    "transform": "rotateX(" + options.angle + "deg) scale3d(" + options.scale + "," + options.scale + "," + options.scale + ")",
                     "position" : "relative"
                 });
-                $(this).parent().css('z-index', 99001);
+                
             })
                 .mouseout(function(e) {
                     $(this).css({
                         "-webkit-transform": "",
+                        "transform": "",
                         "position" : "relative"
                     });
                     $(this).parent().css('z-index', 99000);
@@ -128,18 +138,10 @@
         };
 
         /**
-         * Check does browser support 3d transform
-         * @credit http://stackoverflow.com/questions/6189966/detect-condition-to-test-if-a-browser-supports-css-translate3d
-         */
-        var has3d = function() {
-            return ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix());
-        };
-
-        /**
          * Create gradient colors for each side based on start and end color
          */
         var gradient = function(){
-		    var r = 0,
+            var r = 0,
                 g = 0,
                 b = 0,
                 sr = 0,
@@ -178,13 +180,11 @@
          */
         this.each(
             function() {
-                if (has3d()) {
-                    init(this);
-                }
+                init(this);
             }
-        )
+        );
 
 
-    }
+    };
 
 })(jQuery);
